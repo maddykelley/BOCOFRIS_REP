@@ -105,7 +105,7 @@ on(dom.byId("getPercentButton"), "click", executeGetPercentile);
 
         var query = new Query();
         query.returnGeometry = false;
-        query.outFields = ["Standard_Deviation_of_Damage"];
+        query.outFields = ["Mean_of_Damage"];
         
         e = document.getElementById("buildingtype");
 	
@@ -126,8 +126,8 @@ alert (depthvalue);
           var resultCount = results.features.length;
           for (var i = 0; i < resultCount; i++) {
             var featureAttributes = results.features[i].attributes;
-            alert (featureAttributes.Standard_Deviation_of_Damage );
-              dom.byId("percent").innerHTML =  featureAttributes.Standard_Deviation_of_Damage;
+            alert (featureAttributes.Mean_of_Damage );
+              dom.byId("percent").innerHTML =  featureAttributes.Mean_of_Damage;
             
           }
         
