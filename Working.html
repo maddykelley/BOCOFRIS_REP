@@ -77,7 +77,7 @@
     var featureSFHA = new FeatureLayer("https://services1.arcgis.com/44C95LOqZjbh8Row/arcgis/rest/services/SFHA/FeatureServer/0");
     map.addLayer(featureSFHA);
 
-    var featureLayer = new FeatureLayer("https://services1.arcgis.com/44C95LOqZjbh8Row/ArcGIS/rest/services/BuildingRelateDepth/FeatureServer/0");
+    var featureLayer = new FeatureLayer("https://services1.arcgis.com/44C95LOqZjbh8Row/arcgis/rest/services/Footprints20180429/FeatureServer");
     map.addLayer(featureLayer);    
 
 //define actions for map
@@ -102,7 +102,7 @@ on(dom.byId("getPercentButton"), "click", executeGetPercentile);
 		e = document.getElementById("buildingtype");
 		var selectbldtype = e.options[e.selectedIndex].value;
 			alert (selectbldtype);
-		var depthvalue = document.getElementById("depth").innerText;
+		var depthvalue = document.getElementById("Depth").innerText;
 			alert (depthvalue);
         
           query.where="Depth = "+(depthvalue) +"AND Structure='"+selectbldtype+"'";
