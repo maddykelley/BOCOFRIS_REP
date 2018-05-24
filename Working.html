@@ -6,12 +6,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Manage results from multiple queries</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/3.23/dijit/themes/tundra/tundra.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/css/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.24/esri/themes/calcite/dijit/calcite.css">
+   <link rel="stylesheet" href="https://js.arcgis.com/3.24/esri/themes/calcite/esri/esri.css">
     <!--inserted css file-->  
 	<style>
       html, body { height: 100%; width: 100%; margin: 0; padding: 0; }
       #map{ margin: 0; padding: 0; }
+        #search {
+         display: block;
+         position: absolute;
+         z-index: 2;
+         top: 20px;
+         left: 74px;
+      }
       #controls {
         position: absolute;
         height: 200px;
@@ -32,7 +39,7 @@
       .label { display: inline-block; width: 140px; }
     </style>
 <!--Java script version I am referencing. -->  
-    <script src="https://js.arcgis.com/3.23/"></script>
+    <script src="https://js.arcgis.com/3.24/"></script>
 	<!--connecting to the API-->
 	<!--ArcGIS API is built on dojo which include function (require) similar to script in HTML -->  
     <script>
@@ -43,7 +50,7 @@
         "esri/Color", "dojo/_base/array", "dojo/dom","dojo/on",
         "esri/config", "esri/map", "esri/geometry/Extent",
         "esri/symbols/SimpleFillSymbol", "esri/layers/FeatureLayer",
-        "esri/tasks/query", "esri/tasks/QueryTask",
+        "esri/tasks/query", "esri/tasks/QueryTask","esri/dijit/Search",
         "dijit/layout/BorderContainer", "dijit/layout/ContentPane",
         "dojo/domReady!"
       ], function(
@@ -52,16 +59,22 @@
         Color, arrayUtils, dom,on, 
         esriConfig, Map, Extent,
         SimpleFillSymbol, FeatureLayer,
-        Query, QueryTask
+        Query, QueryTask, Search
       ) {
 //create layout applying dijits
         parser.parse();
 //from dojo - returns a combined object that is an array combined with a promise.
-             var map = new Map("map", {
+      var map = new Map("map", {
       basemap: "topo",
       center: [-105.2705, 40.0150],
       zoom: 13
     });
+    
+     var search = new Search({
+            map: map
+         }, "search");
+         
+         search.startup();
 
 //define new FeatureLayers
     var featureSFHA = new FeatureLayer("https://services1.arcgis.com/44C95LOqZjbh8Row/arcgis/rest/services/SFHA/FeatureServer/0");
@@ -75,7 +88,6 @@
 map.on("click", executeQueries);
 
 //First Function
-//?? Jing - function only works on first click. can't select different house type and re-run
 on(dom.byId("getPercentButton"), "click", executeGetPercentile);
 //Get Percent Function
 	function executeGetPercentile () {
@@ -86,11 +98,13 @@ on(dom.byId("getPercentButton"), "click", executeGetPercentile);
 		query.returnGeometry = false;
 //Result field
 		query.outFields = ["DamageP"];
-//?? Defining the element building type from table. defining two variables for damage percent query
+// Defining the element building type from table. defining two variables for damage percent query
 		e = document.getElementById("buildingtype");
 		var selectbldtype = e.options[e.selectedIndex].value;
 			alert (selectbldtype);
-		var depthvalue = document.getElementById("Depth").innerText;
+		var depthvalue = document.getElementById("depth").innerText;
+
+//?? THIS ISN'T WORKING
 			alert (depthvalue);
         
           query.where="Depth = "+(depthvalue) +"AND Structure='"+selectbldtype+"'";
@@ -98,8 +112,10 @@ on(dom.byId("getPercentButton"), "click", executeGetPercentile);
         }
 //Function within First Function 
         function showResults (results) {
+          
           var resultItems = [];
           var resultCount = results.features.length;
+          alert (resultCount);
 //returnDistinctValues
 		  for (var i = 0; i < resultCount; i++) {
             var featureAttributes = results.features[i].attributes;
@@ -161,7 +177,8 @@ on(dom.byId("CalculateButton"), "click", executeCalculation);
       });
     </script>
  </head>
-  <body class="tundra">           
+  <body class="calcite">          
+  
 <!--dojo toolkit referencing require above - beign parsed into a decorated html. Digit is graphics library for dojo--> 
      <div data-dojo-type="dijit.layout.BorderContainer" 
          data-dojo-props="design:'headline',gutters:false" 
@@ -169,7 +186,9 @@ on(dom.byId("CalculateButton"), "click", executeCalculation);
       <div id="map" 
            data-dojo-type="dijit.layout.ContentPane" 
            data-dojo-props="region:'center'">
-        <div id="controls">
+     <div id="search"></div>
+    
+      <div id="controls">
           <h3>Building Info</h3>
 <!--Below is the table where selected structures attritube and cost percentages are reported. Included are two function buttoms-->
 <!--<button id= "" > TEXT </button> -->
@@ -180,9 +199,9 @@ on(dom.byId("CalculateButton"), "click", executeCalculation);
             <td style="height: 23px;">&nbsp;Structure Type</td>
             <td style="height: 23px;"><select id="buildingtype">
 			<!-- drop down select -->
-            <option value="One Story, No Basement">One Story, No Basement</option>
-            <option value="Two or More Stories-No Basement">Two or More Stories-No Basement</option>
-            <option value="Split-Level-No Basement">Split-Level-No Basement</option>
+            <option value="One Story No Basement">One Story No Basement</option>
+            <option value="Two or More Stories No Basement">Two or More Stories No Basement</option>
+            <option value="Split-Level No Basement">Split Level No Basement</option>
             </select></td>
             </tr>
 			<!--value and depth from attributes of polygon-->
